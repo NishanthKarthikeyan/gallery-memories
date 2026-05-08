@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapVault — 家族の思い出</title>
+  <meta name="description" content="SnapVault — Your private family photo vault. Store, organize and relive precious memories securely.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans:['Inter','sans-serif'], display:['Noto Serif JP', 'serif'] },
+          colors: {
+            sakura:{ DEFAULT:'#FFB7C5', light:'#FFD1DC', dark:'#FF91A4', glow:'rgba(255,183,197,0.35)' },
+            crimson:{ DEFAULT:'#C82828', glow:'rgba(200,40,40,0.25)' },
+            ink:{ DEFAULT:'#0A0A10', glow:'rgba(10,10,16,0.25)' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ─── Background aurora ─────────────────────── */
+    body {
+      background: #0A0A10;
+      overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      color: white;
+      min-height: 100vh;
+    }
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .aurora::before {
+      content: '';
+      position: absolute; width: 900px; height: 900px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255,183,197,0.15) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation: auroraMove1 18s ease-in-out infinite alternate;
+    }
+    .aurora::after {
+      content: '';
+      position: absolute; width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,40,40,0.15) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation: auroraMove2 14s ease-in-out infinite alternate;
+    }
+    .aurora-mid {
+      position: fixed; width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255,209,220,0.1) 0%, transparent 70%);
+      top: 40%; left: 50%; transform: translate(-50%,-50%);
+      animation: auroraMove3 20s ease-in-out infinite alternate;
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes auroraMove1 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(200px,150px) scale(1.3)} }
+    @keyframes auroraMove2 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(-180px,-120px) scale(1.2)} }
+    @keyframes auroraMove3 { 0%{transform:translate(-50%,-50%) scale(1)} 100%{transform:translate(-50%,-50%) scale(1.5)} }
+
+    /* ─── Glass panels ──────────────────────────── */
+    .glass {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255,183,197,0.08);
+    }
+    .glass-card {
+      background: rgba(20,15,20,0.6);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(255,183,197,0.15);
+    }
+    .glass-login {
+      background: rgba(15,10,15,0.8);
+      backdrop-filter: blur(40px) saturate(220%);
+      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      border: 1px solid rgba(255,183,197,0.2);
+      box-shadow: 0 0 80px rgba(200,40,40,0.15), 0 0 40px rgba(255,183,197,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* ─── Sakura gradient text ────────────────────── */
+    .sakura-text {
+      background: linear-gradient(135deg, #FFD1DC 0%, #FFB7C5 40%, #C82828 80%, #FFD1DC 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmerText 5s linear infinite;
+    }
+    @keyframes shimmerText { 0%{background-position:0%} 100%{background-position:200%} }
+
+    /* ─── Glow button ───────────────────────────── */
+    .btn-sakura {
+      background: linear-gradient(135deg, #FFB7C5, #FF91A4);
+      box-shadow: 0 4px 20px rgba(255,183,197,0.3);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      position: relative; overflow: hidden;
+      color: #0A0A10;
+    }
+    .btn-sakura::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-sakura:hover { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(255,183,197,0.5); }
+    .btn-sakura:hover::after { opacity: 1; }
+    .btn-sakura:active { transform: translateY(0); }
+
+    .btn-outline {
+      border: 1px solid rgba(255,183,197,0.3);
+      color: rgba(255,183,197,0.9);
+      background: rgba(255,183,197,0.05);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn-outline:hover { background: rgba(255,183,197,0.15); border-color: rgba(255,183,197,0.6); color: #FFF; box-shadow: 0 0 20px rgba(255,183,197,0.2); transform: translateY(-1px); }
+
+    /* ─── Animated border card ──────────────────── */
+    .album-card {
+      position: relative; border-radius: 16px; overflow: hidden;
+      cursor: pointer; transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      background: rgba(20,15,20,0.55);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .album-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,183,197,0) 0%, rgba(255,183,197,0.1) 50%, rgba(255,183,197,0) 100%);
+      opacity: 0; transition: opacity 0.5s; z-index: 1; pointer-events: none;
+    }
+    .album-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,183,197,0.3), 0 0 40px rgba(255,183,197,0.15); }
+    .album-card:hover::before { opacity: 1; }
+    .album-card .thumb { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .album-card:hover .thumb { transform: scale(1.1) rotate(1deg); }
+    .album-card .badge { background: linear-gradient(135deg,#FFB7C5,#FF91A4); box-shadow: 0 4px 12px rgba(255,183,197,0.4); color: #0A0A10; }
+
+    /* ─── Image cards ───────────────────────────── */
+    .img-card {
+      border-radius: 12px; overflow: hidden; position: relative;
+      background: rgba(20,15,20,0.5); border: 1px solid rgba(255,255,255,0.04);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .img-card:hover { transform: translateY(-6px); box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,183,197,0.2); }
+    .img-card .thumb { transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+    .img-card:hover .thumb { transform: scale(1.08); }
+    .img-card .overlay { background: linear-gradient(0deg, rgba(10,10,16,0.9) 0%, rgba(10,10,16,0.2) 50%, transparent 100%); transition: opacity 0.3s; }
+
+    /* ─── Input fields ──────────────────────────── */
+    .field {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      color: white; transition: all 0.3s;
+      padding: 14px 16px 14px 48px;
+      width: 100%;
+      font-size: 14px;
+    }
+    .field::placeholder { color: rgba(255,255,255,0.2); }
+    .field:focus { outline: none; border-color: rgba(255,183,197,0.5); background: rgba(255,183,197,0.05); box-shadow: 0 0 0 3px rgba(255,183,197,0.1); }
+
+    /* ─── Sakura Particles ─────────────────────────────── */
+    .sakura-petal {
+      position: fixed; pointer-events: none; z-index: 1;
+      animation: fall linear infinite, sway ease-in-out infinite alternate;
+      font-size: 14px;
+      opacity: 0.7;
+      text-shadow: 0 0 5px rgba(255,183,197,0.5);
+    }
+    @keyframes fall {
+      0%   { top: -10%; }
+      100% { top: 110%; }
+    }
+    @keyframes sway {
+      0%   { transform: translateX(0) rotate(0deg); }
+      100% { transform: translateX(100px) rotate(360deg); }
+    }
+
+    /* ─── Stats card ────────────────────────────── */
+    .stat-card {
+      background: rgba(255,183,197,0.05);
+      border: 1px solid rgba(255,183,197,0.12);
+      border-radius: 14px; padding: 12px 20px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0; transition: all 0.3s;
+    }
+    .stat-card:hover { background: rgba(255,183,197,0.1); border-color: rgba(255,183,197,0.25); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,183,197,0.05); }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg,#FFB7C5,#FF91A4);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(255,183,197,0.3);
+      flex-shrink: 0;
+      color: #0A0A10;
+    }
+
+    /* ─── Header glow line ──────────────────────── */
+    .header-line { border-bottom: 1px solid; border-image: linear-gradient(90deg,transparent,rgba(255,183,197,0.3),transparent) 1; }
+
+    /* ─── Search ────────────────────────────────── */
+    .search-wrap { position: relative; }
+    .search-wrap input { padding-left: 48px; }
+    .search-glow:focus-within { box-shadow: 0 0 0 2px rgba(255,183,197,0.2); border-radius: 12px; }
+
+    /* ─── Viewer ────────────────────────────────── */
+    #image-viewer { display:none; }
+    #image-viewer.active { display:flex; animation: fadeInViewer 0.4s ease; }
+    @keyframes fadeInViewer { from{opacity:0; backdrop-filter:blur(0px);} to{opacity:1; backdrop-filter:blur(25px);} }
+
+    /* ─── Toast ─────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      z-index: 9999; padding: 12px 32px; border-radius: 50px;
+      font-weight: 600; font-size: 13px; letter-spacing: 0.05em;
+      background: linear-gradient(135deg,#FFB7C5,#FF91A4);
+      color: #0A0A10; box-shadow: 0 10px 40px rgba(255,183,197,0.4);
+      animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+    }
+    #toast.hidden { display: none; }
+    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px) scale(0.9)} to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} }
+
+    /* ─── Logo glow ring ────────────────────────── */
+    .logo-ring {
+      position: relative;
+    }
+    .logo-ring::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 20px;
+      background: linear-gradient(135deg,#FFD1DC,#FFB7C5,#C82828);
+      background-size: 200% 200%; animation: shimmerText 3s linear infinite;
+      z-index: -1; filter: blur(8px); opacity: 0.6;
+    }
+
+    /* ─── Scrollbar ─────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,183,197,0.25); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,183,197,0.5); }
+
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ─── Music btn ─────────────────────────────── */
+    .music-btn {
+      position: fixed; bottom: 24px; right: 24px; z-index: 100;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: rgba(20,15,20,0.8); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,183,197,0.25);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .music-btn:hover { background: rgba(255,183,197,0.15); box-shadow: 0 0 25px rgba(255,183,197,0.3); transform: scale(1.05); }
+
+    /* ─── Section label ─────────────────────────── */
+    .section-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,183,197,0.08); border: 1px solid rgba(255,183,197,0.2);
+      border-radius: 50px; padding: 6px 16px; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,183,197,0.9);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Aurora background -->
+  <div class="aurora"></div>
+  <div class="aurora-mid"></div>
+
+  <!-- Sakura Particles container -->
+  <div id="particles" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden"></div>
+
+  <!-- Music button -->
+  <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+  <button id="music-btn" class="music-btn" title="Toggle Music">
+    <i class="fas fa-music text-sakura-light text-sm" style="color:#FFD1DC"></i>
+  </button>
+
+  <!-- ══════════════════════════════════════════════════
+       LOGIN PAGE
+  ══════════════════════════════════════════════════ -->
+  <div id="login-container" class="hidden relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
+    <div class="glass-login rounded-3xl p-10 w-full max-w-[420px] fade-in">
+
+      <!-- Flashback -->
+      <div id="flashback-container" class="hidden mb-7 rounded-2xl overflow-hidden border border-sakura/30 shadow-lg relative group">
+        <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+        <div class="absolute top-0 left-0 right-0 text-center text-[10px] tracking-[0.2em] font-black uppercase py-2 px-2 z-20"
+             style="background:linear-gradient(135deg,rgba(255,183,197,0.9),rgba(255,145,164,0.9));color:#0A0A10;backdrop-filter:blur(5px)">
+          ✦ &nbsp;あの日の思い出&nbsp; ✦
+        </div>
+        <img src="" id="flashback-img" class="w-full h-40 object-cover transform transition-transform duration-700 group-hover:scale-105">
+      </div>
+
+      <!-- Brand -->
+      <div class="text-center mb-9">
+        <div class="logo-ring inline-block mb-6">
+          <div class="w-[76px] h-[76px] rounded-[22px] flex items-center justify-center mx-auto"
+               style="background:linear-gradient(135deg,#FFB7C5,#FF91A4);box-shadow:0 10px 35px rgba(255,183,197,0.4)">
+            <i class="fas fa-torii-gate text-[#0A0A10] text-3xl"></i>
+          </div>
+        </div>
+        <h1 class="font-display text-5xl font-black sakura-text leading-none tracking-tight mb-3">SnapVault</h1>
+        <div class="section-pill mx-auto mt-2">
+          <i class="fas fa-seedling text-[9px]"></i> 家族の思い出
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="login-form" class="space-y-5">
+        <div class="relative">
+          <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
+          <input id="username" type="text" placeholder="Family Head (家長)" value="nishanth" required class="field">
+        </div>
+        <div class="relative">
+          <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
+          <input id="password" type="password" placeholder="Access Code (暗証番号)" value="knh@2005" required class="field">
+        </div>
+        <button type="submit" class="btn-sakura w-full py-[16px] rounded-xl font-bold text-sm tracking-wide mt-2 flex items-center justify-center gap-2">
+          <i class="fas fa-door-open"></i> Unlock Memories
+        </button>
+      </form>
+
+      <p class="text-center text-white/20 text-xs mt-8 tracking-wide">🔒 永遠に暗号化された保管庫</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MAIN GALLERY
+  ══════════════════════════════════════════════════ -->
+  <main id="photo-gallery" class="hidden relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in">
+
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-10 pb-8 header-line">
+      <div class="flex items-center gap-5">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background:linear-gradient(135deg,#FFB7C5,#FF91A4);box-shadow:0 6px 20px rgba(255,183,197,0.3)">
+          <i class="fas fa-fan text-[#0A0A10] text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-display text-4xl font-black sakura-text leading-tight">SnapVault</h1>
+          <p class="text-white/40 text-xs tracking-[0.2em] uppercase mt-1">Our Family Memories • 私たちの思い出</p>
+        </div>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <button onclick="syncFromCloud()" class="btn-outline flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium">
+          <i class="fas fa-cloud-download-alt text-xs"></i> Sync Cloud
+        </button>
+        <button onclick="exportImages()" class="btn-outline flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium">
+          <i class="fas fa-box-open text-xs"></i> Export
+        </button>
+        <button id="logout-button" onclick="window.location.href='/logout'" class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white/40 border border-white/10 hover:bg-white/5 hover:text-white/70 transition-all">
+          <i class="fas fa-sign-out-alt text-xs"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats -->
+    <div id="stats-bar" class="flex gap-4 mb-10 overflow-x-auto pb-2" style="-ms-overflow-style:none;scrollbar-width:none"></div>
+
+    <!-- Search -->
+    <div class="relative mb-10 search-glow max-w-2xl">
+      <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-sakura/40 text-sm z-10" style="color:rgba(255,183,197,0.4)"></i>
+      <input id="search-input" type="text" placeholder="Search albums (アルバムを検索)…" onkeyup="filterCategories()"
+        class="field" style="border-radius:14px;padding-left:52px;padding-top:16px;padding-bottom:16px;">
+    </div>
+
+    <!-- Section label -->
+    <div class="section-pill mb-6"><i class="fas fa-book-open text-[10px]"></i> Albums (アルバム)</div>
+
+    <!-- Grid -->
+    <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════
+       SUB CATEGORY
+  ══════════════════════════════════════════════════ -->
+  <div id="sub-category-view" class="hidden relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in">
+    <header class="flex items-center justify-between mb-10 pb-8 header-line">
+      <div>
+        <div class="section-pill mb-3"><i class="fas fa-lock text-[10px]"></i> Private (秘密)</div>
+        <h1 class="font-display text-4xl font-black text-white">Private Vault</h1>
+        <p class="text-white/40 text-sm mt-2">Personal secure albums</p>
+      </div>
+      <button id="sub-back-button" class="btn-outline flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium">
+        <i class="fas fa-arrow-left text-xs"></i> Back
+      </button>
+    </header>
+    <div id="sub-category-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       CATEGORY DETAIL
+  ══════════════════════════════════════════════════ -->
+  <div id="category-detail-view" class="hidden relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in">
+    <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-8 header-line">
+      <div>
+        <div class="section-pill mb-3"><i class="fas fa-images text-[10px]"></i> Gallery (ギャラリー)</div>
+        <h1 id="detail-title" class="font-display text-4xl font-black text-white tracking-wide"></h1>
+        <p id="detail-description" class="text-sakura-light/70 text-sm mt-2 font-serif italic" style="color:rgba(255,209,220,0.7)"></p>
+      </div>
+      <div class="flex gap-3">
+        <button id="back-button" class="btn-outline flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium">
+          <i class="fas fa-arrow-left text-xs"></i> Back
+        </button>
+        <button id="add-image-button" class="btn-sakura flex items-center gap-2 px-6 py-2.5 rounded-xl text-[#0A0A10] text-sm font-bold">
+          <i class="fas fa-plus text-xs"></i> Add Photos
+        </button>
+      </div>
+    </header>
+    <div id="detail-images" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       IMAGE VIEWER
+  ══════════════════════════════════════════════════ -->
+  <div id="image-viewer" class="fixed inset-0 z-50 flex-col items-center justify-center"
+       style="background:rgba(5,5,8,0.95);backdrop-filter:blur(25px)">
+    <button onclick="closeViewer()"
+      class="absolute top-6 right-8 w-12 h-12 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all text-2xl z-10">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="relative flex items-center justify-center w-full" style="height:80vh">
+      <button onclick="changeImage(-1)"
+        class="absolute left-6 z-10 w-14 h-14 rounded-full flex items-center justify-center text-white/60 hover:text-sakura-light transition-all text-xl hover:scale-110"
+        style="background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1)">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <img src="" id="full-image" class="max-w-full max-h-full object-contain rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
+           style="border:1px solid rgba(255,183,197,0.15)">
+      <button onclick="changeImage(1)"
+        class="absolute right-6 z-10 w-14 h-14 rounded-full flex items-center justify-center text-white/60 hover:text-sakura-light transition-all text-xl hover:scale-110"
+        style="background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1)">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    <div class="text-center mt-6 px-6 max-w-3xl">
+      <p id="viewer-desc" class="text-white font-display font-medium text-2xl tracking-wide drop-shadow-md"></p>
+      <div class="flex items-center justify-center gap-6 mt-3">
+        <p id="viewer-date" class="text-sakura-light/70 text-sm flex items-center gap-2 font-serif" style="color:rgba(255,209,220,0.7)">
+          <i class="fas fa-calendar-day text-xs"></i> <span></span>
+        </p>
+        <button onclick="downloadCurrentImage()" class="text-sakura-light/70 hover:text-white transition-colors text-sm flex items-center gap-2 font-medium" style="color:rgba(255,209,220,0.7)">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_URL = "";
+  const CREDENTIALS = { user:"Nishanth", pass:"knh@2005", private:"100905" };
+  let MASTER_DATA=[], folderImages=[], activeIndex=0, isPrivateMode=false, currentCategory=null;
+
+  const CATEGORIES = {
+    mumbai:           { title:"Mumbai Magic 🏙️",        desc:"Marine Drive & Gateway of India.",   icon:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=80" },
+    tirupati:         { title:"Tirupathi Darshan 🕉️",   desc:"Holy pilgrimage to Lord Venkatesha.", icon:"https://www.divyayatra.com/Admin/packages/Tirupati%20Package%20%202%20night%203%20days%20.png" },
+    family:           { title:"Family Moments 👨‍👩‍👧‍👦",  desc:"Joys, laughter and togetherness.",    icon:"https://images.unsplash.com/photo-1511895426328-dc8714191011?w=500&q=80" },
+    Me:               { title:"Nishanth's Snaps 📷",    desc:"My personal travel & lifestyle.",      icon:"https://i.pinimg.com/736x/32/37/5b/32375b7226f48e223c37f125eece540f.jpg" },
+    "Room 103":       { title:"Room 103 🛏️",             desc:"My cozy little space.",                icon:"https://m.media-amazon.com/images/M/MV5BYmUyNTgzNDktZjdmNS00ZTZlLWFjZTgtNGY1NjA5MDA2NGJiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" },
+    Thiruvannarmalai: { title:"Thiruvannarmalai 🔱",    desc:"Sacred spiritual journey.",             icon:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYP-F72A65I2oCzlCFYfxt-zbatJAymvK32Q&s" },
+    "Pongal 2k25":    { title:"Pongal 2k26 🌾",          desc:"Festival of harvest & joy.",           icon:"https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=500&q=80" },
+    private:          { title:"Private Vault 🔒",        desc:"Secure personal corner.",              icon:"https://play-lh.googleusercontent.com/UCj2ASWhcSKo9qlHMclOwKNBIRFhXPQnqAaCLHNm1Mj6CMZ0NqlsLjeR1QF631MxzUs5" }
+  };
+
+  /* ── Helpers ────────────────────────────────────── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg; t.classList.remove('hidden');
+    clearTimeout(t._t); t._t = setTimeout(()=>t.classList.add('hidden'), 3200);
+  }
+  function show(id){ document.getElementById(id).classList.remove('hidden'); }
+  function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+  /* ── Data ───────────────────────────────────────── */
+  async function syncMemories() {
+    try {
+      const r = await fetch(`${API_URL}/images`);
+      if (r.ok) {
+        MASTER_DATA = await r.json();
+        renderCategories(); setupFlashback(); updateStats();
+        if (currentCategory) { isPrivateMode ? openSubFolder(currentCategory) : renderImages(); }
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  async function syncFromCloud() {
+    showToast("<i class='fas fa-cloud-download-alt'></i> Pulling from Cloudinary…");
+    try {
+      const r = await fetch(`${API_URL}/sync`);
+      const d = await r.json();
+      if (r.ok) { showToast(`✨ ${d.message}`); syncMemories(); }
+    } catch { showToast("❌ Sync error!"); }
+  }
+
+  async function exportImages() {
+    showToast("<i class='fas fa-box'></i> Preparing export…");
+    try {
+      const r = await fetch(`${API_URL}/export${currentCategory ? `?category=${currentCategory}` : ''}`);
+      if (r.ok) {
+        const blob = await r.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'export.zip';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast("✨ Export downloaded!");
+      } else {
+        showToast("❌ Export failed!");
+      }
+    } catch { showToast("❌ Export error!"); }
+  }
+
+  /* ── Stats ──────────────────────────────────────── */
+  function updateStats() {
+    const bar = document.getElementById('stats-bar');
+    const stats = [
+      { icon:'fa-images', label:'Memories', val:MASTER_DATA.length, color:'#FFB7C5' },
+      { icon:'fa-book-open', label:'Albums', val:Object.keys(CATEGORIES).length, color:'#818cf8' },
+      { icon:'fa-heart', label:'Favorites', val:MASTER_DATA.filter(m=>m.fav).length, color:'#f43f5e' },
+    ];
+    bar.innerHTML = stats.map(s=>`
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,${s.color}CC,${s.color})">
+          <i class="fas ${s.icon} text-[#0A0A10] text-sm"></i>
+        </div>
+        <div>
+          <p class="text-white font-black text-2xl leading-none font-display mb-1">${s.val}</p>
+          <p class="text-white/40 text-[11px] font-bold tracking-widest uppercase">${s.label}</p>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ── Flashback ──────────────────────────────────── */
+  function setupFlashback() {
+    if (MASTER_DATA.length>0) {
+      const r = MASTER_DATA[Math.floor(Math.random()*MASTER_DATA.length)];
+      document.getElementById('flashback-container').classList.remove('hidden');
+      document.getElementById('flashback-img').src = r.url;
+    }
+  }
+
+  /* ── Category grid ──────────────────────────────── */
+  function renderCategories(query="") {
+    const grid = document.getElementById('category-grid');
+    grid.innerHTML='';
+    for (let key in CATEGORIES) {
+      if (!CATEGORIES[key].title.toLowerCase().includes(query)) continue;
+      let count = 0;
+      let icon = CATEGORIES[key].icon; // Fallback icon
+      
+      if (key === 'private') {
+        const privImgs = MASTER_DATA.filter(m=>m.category==='reshma'||m.category==='deepa');
+        count = privImgs.length;
+        // Keep the default icon for private folder
+      } else {
+        const imgs = MASTER_DATA.filter(m=>m.category===key);
+        count = imgs.length;
+        if(count > 0) icon = imgs[imgs.length - 1].url;
+      }
+      
+      addAlbumCard(grid, key, CATEGORIES[key].title, icon, CATEGORIES[key].desc, count);
+    }
+  }
+
+  function addAlbumCard(grid, key, title, icon, desc, count) {
+    const card = document.createElement('div');
+    card.className = 'album-card';
+    card.innerHTML = `
+      <div class="relative overflow-hidden" style="height:190px">
+        <img src="${icon}" alt="${title}" class="thumb w-full h-full object-cover" loading="lazy"
+             onerror="this.src='https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=400&q=80'">
+        <div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(10,10,16,0.95) 0%,rgba(10,10,16,0.3) 50%,transparent 100%)"></div>
+        <div class="badge absolute top-3 right-3 text-[11px] font-black px-3 py-1.5 rounded-full text-[#0A0A10]">
+          ${count} <span class="font-medium opacity-80">pics</span>
+        </div>
+        ${key==='private'?'<div class="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20"><i class="fas fa-lock text-sakura-light text-sm" style="color:#FFD1DC"></i></div>':''}
+      </div>
+      <div class="p-5">
+        <p class="text-white font-display font-bold text-lg leading-tight truncate tracking-wide">${title}</p>
+        <p class="text-white/40 text-xs mt-1.5 truncate font-serif italic">${desc}</p>
+      </div>`;
+    card.onclick = () => openCategory(key);
+    grid.appendChild(card);
+  }
+
+  /* ── Navigation ─────────────────────────────────── */
+  function openCategory(key) {
+    if (key==='private') {
+      if (prompt("🔒 Enter Vault Code (暗証番号):")!==CREDENTIALS.private) return;
+      hide('photo-gallery'); show('sub-category-view'); renderSubCategories(); 
+      localStorage.setItem('currentView', 'private');
+      return;
+    }
+    isPrivateMode=false; currentCategory=key;
+    hide('photo-gallery'); show('category-detail-view');
+    document.getElementById('detail-title').textContent = CATEGORIES[key].title;
+    document.getElementById('detail-description').textContent = CATEGORIES[key].desc;
+    renderImages();
+    localStorage.setItem('currentView', key);
+  }
+
+  function renderSubCategories() {
+    const grid = document.getElementById('sub-category-grid');
+    grid.innerHTML='';
+    
+    const reshmaImgs = MASTER_DATA.filter(m=>m.category==='reshma');
+    const reshmaIcon = reshmaImgs.length > 0 ? reshmaImgs[reshmaImgs.length - 1].url : "https://img.freepik.com/premium-vector/hand-drawn-urban-lettering-word-sister-textured-sprayed-vector-typography-concept-family_119217-4991.jpg";
+    
+    const deepaImgs = MASTER_DATA.filter(m=>m.category==='deepa');
+    const deepaIcon = deepaImgs.length > 0 ? deepaImgs[deepaImgs.length - 1].url : "https://images.unsplash.com/photo-1529111290557-82f6d5c6cf85?w=400&q=80";
+
+    [
+      { id:'reshma', title:"Reshma 🌸", icon: reshmaIcon },
+      { id:'deepa',  title:"Deepa 🌸",  icon: deepaIcon }
+    ].forEach(sub => {
+      const count = MASTER_DATA.filter(m=>m.category===sub.id).length;
+      const card = document.createElement('div');
+      card.className = 'album-card';
+      card.innerHTML = `
+        <div class="relative overflow-hidden" style="height:190px">
+          <img src="${sub.icon}" alt="${sub.title}" class="thumb w-full h-full object-cover" loading="lazy">
+          <div class="absolute inset-0" style="background:linear-gradient(0deg,rgba(10,10,16,0.9) 0%,transparent 60%)"></div>
+          <div class="badge absolute top-3 right-3 text-[11px] font-black px-3 py-1.5 rounded-full text-[#0A0A10]">${count} pics</div>
+        </div>
+        <div class="p-5"><p class="text-white font-display font-bold text-lg">${sub.title}</p></div>`;
+      card.onclick=()=>openSubFolder(sub.id);
+      grid.appendChild(card);
+    });
+  }
+
+  function openSubFolder(subId) {
+    isPrivateMode=true; currentCategory=subId;
+    hide('sub-category-view'); show('category-detail-view');
+    document.getElementById('detail-title').textContent = subId==='reshma'?"Reshma 🌸":"Deepa 🌸";
+    document.getElementById('detail-description').textContent = "Private memories (秘密の思い出).";
+    renderImages();
+    localStorage.setItem('currentView', `sub_${subId}`);
+  }
+
+  /* ── Image grid ─────────────────────────────────── */
+  function renderImages() {
+    const c = document.getElementById('detail-images');
+    c.innerHTML='';
+    folderImages = MASTER_DATA.filter(m=>m.category===currentCategory);
+    if (!folderImages.length) {
+      c.innerHTML=`<div class="col-span-full text-center py-32 text-white/20">
+        <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style="background:rgba(255,183,197,0.05);border:1px dashed rgba(255,183,197,0.2)">
+          <i class="fas fa-camera-retro text-4xl" style="color:rgba(255,183,197,0.3)"></i>
+        </div>
+        <p class="text-xl font-display font-bold text-white/40 tracking-wide">No memories yet</p>
+        <p class="text-sm text-white/20 mt-2 font-serif italic">Click "Add Photos" to begin ✨</p>
+      </div>`;
+      return;
+    }
+    folderImages.forEach((img,i)=>{
+      const div=document.createElement('div');
+      div.className='img-card group';
+      div.innerHTML=`
+        <div class="relative overflow-hidden" style="height:240px">
+          <img src="${img.url}" class="thumb w-full h-full object-cover cursor-pointer" onclick="viewImage(${i})" loading="lazy">
+          <div class="overlay absolute inset-0 pointer-events-none"></div>
+          <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0">
+            <button onclick="editInfo('${img._id}')" title="Edit"
+              class="w-9 h-9 rounded-full flex items-center justify-center text-sakura-light text-sm hover:scale-110 transition-transform"
+              style="background:rgba(10,10,16,0.8);backdrop-filter:blur(10px);border:1px solid rgba(255,183,197,0.3);color:#FFD1DC">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button onclick="deleteImg('${img._id}')" title="Delete"
+              class="w-9 h-9 rounded-full flex items-center justify-center text-red-400 text-sm hover:scale-110 transition-transform"
+              style="background:rgba(10,10,16,0.8);backdrop-filter:blur(10px);border:1px solid rgba(220,20,60,0.4)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4">
+            <p class="text-white text-base font-display font-medium leading-tight truncate drop-shadow-md">${img.desc||'Family Moment'}</p>
+          </div>
+        </div>
+        <div class="px-4 py-3 flex items-center gap-2 border-t border-white/5">
+          <i class="fas fa-clock text-sakura/40 text-[10px]" style="color:rgba(255,183,197,0.4)"></i>
+          <span class="text-white/40 text-[11px] uppercase tracking-widest font-bold">${img.date||'Synced'}</span>
+        </div>`;
+      c.appendChild(div);
+    });
+  }
+
+  /* ── Viewer ─────────────────────────────────────── */
+  function viewImage(i) {
+    activeIndex=i; updateViewer();
+    document.getElementById('image-viewer').classList.add('active');
+    document.body.style.overflow='hidden';
+  }
+  function updateViewer() {
+    const it=folderImages[activeIndex];
+    document.getElementById('full-image').src=it.url;
+    document.getElementById('viewer-desc').textContent=it.desc||"Family Moment";
+    document.querySelector('#viewer-date span').textContent=it.date||"Synced";
+  }
+  function changeImage(s){
+    activeIndex=(activeIndex+s+folderImages.length)%folderImages.length;
+    updateViewer();
+  }
+  function closeViewer(){
+    document.getElementById('image-viewer').classList.remove('active');
+    document.body.style.overflow='';
+  }
+  async function downloadCurrentImage() {
+    const it = folderImages[activeIndex];
+    if(!it) return;
+    showToast("<i class='fas fa-download'></i> Starting download...");
+    try {
+      const response = await fetch(it.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `snapvault-${it.date||'memory'}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+      showToast("❌ Download failed! (Cross-Origin block)");
+      // Fallback: just open in new tab
+      window.open(it.url, '_blank');
+    }
+  }
+
+  /* ── Edit / Delete ──────────────────────────────── */
+  async function editInfo(id) {
+    const item=MASTER_DATA.find(m=>m._id===id);
+    const nd=prompt("Edit Description:",item.desc||"");
+    const ndt=prompt("Edit Date (DD-MM-YYYY):",item.date||"");
+    const ntags=prompt("Edit Tags (comma-separated):",item.tags||"");
+    if(nd!==null&&ndt!==null&&ntags!==null){
+      showToast("<i class='fas fa-spinner fa-spin'></i> Updating memory…");
+      const r=await fetch(`${API_URL}/update/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({desc:nd,date:ndt,tags:ntags})});
+      showToast(r.ok?"✨ Memory updated!":"❌ Update failed"); if(r.ok) syncMemories();
+    }
+  }
+  async function deleteImg(id){
+    if(!confirm("Delete this memory permanently? (この思い出を削除しますか？)")) return;
+    await fetch(`${API_URL}/delete/${id}`,{method:'DELETE'});
+    showToast("<i class='fas fa-check'></i> Memory deleted."); syncMemories();
+  }
+
+  /* ── Add photo ──────────────────────────────────── */
+  document.getElementById('add-image-button').onclick=()=>{
+    const fi=document.createElement('input');
+    fi.type='file'; fi.accept='image/*,video/*';
+    fi.multiple=true; // Allow multiple
+    fi.onchange=async e=>{
+      const files=e.target.files;
+      if (!files.length) return;
+      const desc=prompt("Description:","Family Moment")||"Family Moment";
+      const date=prompt("Date (DD-MM-YYYY):",new Date().toLocaleDateString('en-GB').replace(/\//g,'-'))||"";
+      const tags=prompt("Tags (comma-separated):","")||"";
+      const fd=new FormData();
+      for(let i=0; i<files.length; i++) {
+        fd.append('file', files[i]);
+      }
+      fd.append('category',currentCategory); fd.append('desc',desc); fd.append('date',date); fd.append('tags',tags);
+      showToast(`<i class='fas fa-cloud-upload-alt'></i> Uploading ${files.length} memory(s)…`);
+      const r=await fetch(`${API_URL}/upload`,{method:'POST',body:fd});
+      showToast(r.ok?"✨ Memories saved!":"❌ Upload failed"); if(r.ok) syncMemories();
+    };
+    fi.click();
+  };
+
+  /* ── Back buttons ───────────────────────────────── */
+  document.getElementById('back-button').onclick=()=>{
+    hide('category-detail-view');
+    if(isPrivateMode) { show('sub-category-view'); localStorage.setItem('currentView', 'private'); }
+    else { show('photo-gallery'); currentCategory=null; localStorage.setItem('currentView', 'main'); }
+  };
+  document.getElementById('sub-back-button').onclick=()=>{
+    hide('sub-category-view'); show('photo-gallery'); currentCategory=null; isPrivateMode=false; localStorage.setItem('currentView', 'main');
+  };
+
+  /* ── Search ─────────────────────────────────────── */
+  async function filterCategories(query="") {
+    if (query) {
+      const r = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`);
+      if (r.ok) {
+        const data = await r.json();
+        const cats = {};
+        data.forEach(img => {
+          if (!cats[img.category]) cats[img.category] = [];
+          cats[img.category].push(img);
+        });
+        renderCategoriesFromData(cats);
+      }
+    } else {
+      renderCategories();
+    }
+  }
+
+  function renderCategoriesFromData(cats) {
+    const grid = document.getElementById('category-grid');
+    grid.innerHTML = '';
+    for (let key in cats) {
+      const count = cats[key].length;
+      const icon = CATEGORIES[key] ? CATEGORIES[key].icon : "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=400&q=80";
+      const title = CATEGORIES[key] ? CATEGORIES[key].title : key;
+      const desc = CATEGORIES[key] ? CATEGORIES[key].desc : "Category";
+      addAlbumCard(grid, key, title, icon, desc, count);
+    }
+  }
+
+  /* ── Music ──────────────────────────────────────── */
+  const music=document.getElementById('bg-music');
+  document.getElementById('music-btn').onclick=function(){
+    if(music.paused){music.play();this.innerHTML='<i class="fas fa-pause text-sakura-light text-lg" style="color:#FFD1DC"></i>';}
+    else{music.pause();this.innerHTML='<i class="fas fa-music text-sakura-light text-lg" style="color:#FFD1DC"></i>';}
+  };
+
+  /* ── Sakura Particles ───────────────────────────── */
+  function createParticles(){
+    const c=document.getElementById('particles');
+    const petals = ['🌸', '💮'];
+    for(let i=0;i<30;i++){
+      const p=document.createElement('div');
+      p.className='sakura-petal';
+      p.innerText = petals[Math.floor(Math.random() * petals.length)];
+      const dur=(Math.random()*15+10)+'s';
+      const del=(Math.random()*10)+'s';
+      const swayDur=(Math.random()*4+3)+'s';
+      const size=(Math.random()*10+12)+'px';
+      p.style.cssText=`
+        left:${Math.random()*100}%;
+        font-size:${size};
+        animation: fall ${dur} linear infinite ${del}, sway ${swayDur} ease-in-out infinite alternate ${del};
+      `;
+      c.appendChild(p);
+    }
+  }
+
+  /* ── Keyboard nav ───────────────────────────────── */
+  document.addEventListener('keydown',e=>{
+    if(document.getElementById('image-viewer').classList.contains('active')){
+      if(e.key==='ArrowLeft') changeImage(-1);
+      if(e.key==='ArrowRight') changeImage(1);
+      if(e.key==='Escape') closeViewer();
+    }
+  });
+
+  /* ── Init ───────────────────────────────────────── */
+  function init(){
+    createParticles();
+    syncMemories().then(() => {
+      const view = localStorage.getItem('currentView');
+      if (view === 'private') {
+         openCategory('private');
+      } else if (view && view.startsWith('sub_')) {
+         const subId = view.replace('sub_', '');
+         openSubFolder(subId);
+      } else if (view && view !== 'main' && CATEGORIES[view]) {
+         openCategory(view);
+      } else {
+         show('photo-gallery');
+      }
+    });
+  }
+  init();
+</script>
+</body>
+</html>
