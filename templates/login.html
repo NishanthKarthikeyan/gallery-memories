@@ -178,15 +178,15 @@
       {% endwith %}
 
       <!-- Form -->
-      <form method="POST" class="space-y-5">
+      <form method="POST" class="space-y-5" autocomplete="off">
         {{ form.hidden_tag() }}
         <div class="relative">
           <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
-          <input name="username" id="username" type="text" placeholder="Family Head (家長)" value="nishanth" required class="field">
+          <input name="username" id="username" type="text" placeholder="Family Head (家長)" required class="field" autocomplete="off">
         </div>
         <div class="relative">
           <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
-          <input name="password" id="password" type="password" placeholder="Access Code (暗証番号)" value="knh@2005" required class="field">
+          <input name="password" id="password" type="password" placeholder="Access Code (暗証番号)" required class="field" autocomplete="new-password">
         </div>
         <button type="submit" name="submit" class="btn-sakura w-full py-[16px] rounded-xl font-bold text-sm tracking-wide mt-2 flex items-center justify-center gap-2">
           <i class="fas fa-door-open"></i> Unlock Memories
