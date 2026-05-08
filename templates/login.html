@@ -24,11 +24,18 @@
   <style>
     /* ─── Background aurora ─────────────────────── */
     body {
-      background: #0A0A10;
+      background: linear-gradient(-45deg, #0A0A10, #1f121a, #0A0A10, #160a12);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
       overflow-x: hidden;
       font-family: 'Inter', sans-serif;
       color: white;
       min-height: 100vh;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     .aurora {
       position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
@@ -139,6 +146,19 @@
       0%   { transform: translateX(0) rotate(0deg); }
       100% { transform: translateX(100px) rotate(360deg); }
     }
+    
+    /* ─── Glowing Orbs ─────────────────────────────── */
+    .firefly {
+      position: absolute; border-radius: 50%;
+      background: #FFD1DC;
+      box-shadow: 0 0 10px #FFB7C5, 0 0 20px #FFB7C5;
+      opacity: 0.5; pointer-events: none;
+    }
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+      50% { opacity: 0.7; }
+      100% { transform: translate(60px, -60px) scale(1.5); opacity: 0.1; }
+    }
   </style>
 </head>
 <body>
@@ -216,6 +236,17 @@
           animation: fall ${dur} linear infinite ${del}, sway ${swayDur} ease-in-out infinite alternate ${del};
         `;
         c.appendChild(p);
+      }
+      for(let i=0; i<20; i++){
+        const f=document.createElement('div');
+        f.className = 'firefly';
+        const size = (Math.random()*4+2)+'px';
+        const top = (Math.random()*100)+'%';
+        const left = (Math.random()*100)+'%';
+        const dur = (Math.random()*15+10)+'s';
+        const del = (Math.random()*5)+'s';
+        f.style.cssText=`width:${size};height:${size};top:${top};left:${left};animation: floatOrb ${dur} ease-in-out infinite alternate ${del};`;
+        c.appendChild(f);
       }
     }
     createParticles();
