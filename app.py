@@ -97,7 +97,7 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data.lower()).first()
         if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user, remember=True)
             return redirect(url_for('index'))
