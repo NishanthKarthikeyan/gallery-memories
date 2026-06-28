@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="oXT5X4jHcwXBKlODsRyr_1iwapuBOVpA0_8Pm52wQng" />
-  <title>Login - SnapVault — 家族の思い出</title>
+  <title>Login - Nishanth K Gallery</title>
+  <meta name="description" content="Login to the private gallery and digital vault of Nishanth K (nishanthk.site).">
+  <meta name="keywords" content="Nishanth K, nishanthk.site, Memory Gallery Login">
+  <meta name="author" content="Nishanth K">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,6 +17,7 @@
         extend: {
           fontFamily: { sans:['Inter','sans-serif'], display:['Noto Serif JP', 'serif'] },
           colors: {
+            frost:{ DEFAULT:'#89CFF0', light:'#B0E0E6', dark:'#4682B4', glow:'rgba(137,207,240,0.35)' },
             sakura:{ DEFAULT:'#FFB7C5', light:'#FFD1DC', dark:'#FF91A4', glow:'rgba(255,183,197,0.35)' },
             crimson:{ DEFAULT:'#C82828', glow:'rgba(200,40,40,0.25)' },
             ink:{ DEFAULT:'#0A0A10', glow:'rgba(10,10,16,0.25)' }
@@ -22,61 +27,40 @@
     }
   </script>
   <style>
-    /* ─── Background aurora ─────────────────────── */
+    /* ─── Custom Background ─────────────────────── */
     body {
-      background: linear-gradient(-45deg, #0A0A10, #1f121a, #0A0A10, #160a12);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      overflow-x: hidden;
+      background: url('/static/bg.jpg') center/cover no-repeat fixed;
+      background-color: #0A0A10;
+      overflow: hidden;
       font-family: 'Inter', sans-serif;
       color: white;
       min-height: 100vh;
     }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Removed stars CSS */
+    
+    /* ─── Attractive Glowing Effects ─────────────────────────────── */
+    .glow-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(137,207,240,0.15), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(176,224,230,0.15), transparent 60%);
+      animation: pulseGlow 6s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
     }
-    .aurora {
-      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    @keyframes pulseGlow {
+      0% { opacity: 0.4; transform: scale(1); filter: hue-rotate(0deg); }
+      100% { opacity: 1; transform: scale(1.1); filter: hue-rotate(30deg); }
     }
-    .aurora::before {
-      content: '';
-      position: absolute; width: 900px; height: 900px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(255,183,197,0.15) 0%, transparent 70%);
-      top: -200px; left: -200px;
-      animation: auroraMove1 18s ease-in-out infinite alternate;
-    }
-    .aurora::after {
-      content: '';
-      position: absolute; width: 700px; height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(200,40,40,0.15) 0%, transparent 70%);
-      bottom: -100px; right: -100px;
-      animation: auroraMove2 14s ease-in-out infinite alternate;
-    }
-    .aurora-mid {
-      position: fixed; width: 600px; height: 600px; border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(255,209,220,0.1) 0%, transparent 70%);
-      top: 40%; left: 50%; transform: translate(-50%,-50%);
-      animation: auroraMove3 20s ease-in-out infinite alternate;
-      pointer-events: none; z-index: 0;
-    }
-    @keyframes auroraMove1 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(200px,150px) scale(1.3)} }
-    @keyframes auroraMove2 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(-180px,-120px) scale(1.2)} }
-    @keyframes auroraMove3 { 0%{transform:translate(-50%,-50%) scale(1)} 100%{transform:translate(-50%,-50%) scale(1.5)} }
 
     .glass-login {
-      background: rgba(15,10,15,0.8);
+      background: rgba(10,15,25,0.7);
       backdrop-filter: blur(40px) saturate(220%);
       -webkit-backdrop-filter: blur(40px) saturate(220%);
-      border: 1px solid rgba(255,183,197,0.2);
-      box-shadow: 0 0 80px rgba(200,40,40,0.15), 0 0 40px rgba(255,183,197,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid rgba(137,207,240,0.2);
+      box-shadow: 0 0 80px rgba(70,130,180,0.2), 0 0 40px rgba(137,207,240,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
-    .sakura-text {
-      background: linear-gradient(135deg, #FFD1DC 0%, #FFB7C5 40%, #C82828 80%, #FFD1DC 100%);
+    .frost-text {
+      background: linear-gradient(135deg, #B0E0E6 0%, #89CFF0 40%, #4682B4 80%, #B0E0E6 100%);
       background-size: 200% auto;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -84,22 +68,39 @@
     }
     @keyframes shimmerText { 0%{background-position:0%} 100%{background-position:200%} }
 
-    .btn-sakura {
-      background: linear-gradient(135deg, #FFB7C5, #FF91A4);
-      box-shadow: 0 4px 20px rgba(255,183,197,0.3);
+    .btn-frost {
+      background: linear-gradient(135deg, #89CFF0, #4682B4);
+      box-shadow: 0 4px 20px rgba(137,207,240,0.3);
       transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
       position: relative; overflow: hidden;
       color: #0A0A10;
     }
-    .btn-sakura::after {
+    .btn-frost::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+      background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
       opacity: 0; transition: opacity 0.3s;
     }
-    .btn-sakura:hover { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(255,183,197,0.5); }
-    .btn-sakura:hover::after { opacity: 1; }
-    .btn-sakura:active { transform: translateY(0); }
-
+    .btn-frost::before {
+      content: ''; position: absolute; top: 0; left: -150%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: skewX(-20deg);
+      animation: shineSweep 4s infinite;
+    }
+    @keyframes shineSweep { 0% { left: -150%; } 20% { left: 150%; } 100% { left: 150%; } }
+    
+    .btn-frost:hover { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(137,207,240,0.5); }
+    .btn-frost:hover::after { opacity: 1; }
+    .btn-frost:active { transform: translateY(0); }
+    
+    /* ─── Input Field Glow Animation ───────────────── */
+    .input-wrapper { position: relative; }
+    .input-wrapper::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+      background: #89CFF0; transition: all 0.4s ease; transform: translateX(-50%); box-shadow: 0 0 10px #89CFF0;
+    }
+    .input-wrapper:focus-within::after { width: 100%; }
+    
     .field {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
@@ -110,48 +111,46 @@
       font-size: 14px;
     }
     .field::placeholder { color: rgba(255,255,255,0.2); }
-    .field:focus { outline: none; border-color: rgba(255,183,197,0.5); background: rgba(255,183,197,0.05); box-shadow: 0 0 0 3px rgba(255,183,197,0.1); }
+    .field:focus { outline: none; border-color: rgba(137,207,240,0.5); background: rgba(137,207,240,0.05); box-shadow: 0 0 0 3px rgba(137,207,240,0.1); }
 
     .logo-ring { position: relative; }
     .logo-ring::before {
       content: ''; position: absolute; inset: -4px; border-radius: 20px;
-      background: linear-gradient(135deg,#FFD1DC,#FFB7C5,#C82828);
+      background: linear-gradient(135deg,#B0E0E6,#89CFF0,#4682B4);
       background-size: 200% 200%; animation: shimmerText 3s linear infinite;
       z-index: -1; filter: blur(8px); opacity: 0.6;
     }
     .section-pill {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,183,197,0.08); border: 1px solid rgba(255,183,197,0.2);
+      background: rgba(137,207,240,0.08); border: 1px solid rgba(137,207,240,0.2);
       border-radius: 50px; padding: 6px 16px; font-size: 11px;
       font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-      color: rgba(255,183,197,0.9);
+      color: rgba(137,207,240,0.9);
       backdrop-filter: blur(10px);
     }
     .fade-in { animation: fadeIn 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     
-    /* ─── Sakura Particles ─────────────────────────────── */
-    .sakura-petal {
+    /* ─── Real Snow Particles ─────────────────────────────── */
+    .snow-flake {
       position: fixed; pointer-events: none; z-index: 1;
-      animation: fall linear infinite, sway ease-in-out infinite alternate;
-      font-size: 14px;
-      opacity: 0.7;
-      text-shadow: 0 0 5px rgba(255,183,197,0.5);
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      animation: snowFall linear infinite;
     }
-    @keyframes fall {
-      0%   { top: -10%; }
-      100% { top: 110%; }
-    }
-    @keyframes sway {
-      0%   { transform: translateX(0) rotate(0deg); }
-      100% { transform: translateX(100px) rotate(360deg); }
+    @keyframes snowFall {
+      0%   { transform: translateY(-10vh) translateX(0) scale(1); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.8; }
+      100% { transform: translateY(110vh) translateX(15vw) scale(0.8); opacity: 0; }
     }
     
     /* ─── Glowing Orbs ─────────────────────────────── */
     .firefly {
       position: absolute; border-radius: 50%;
-      background: #FFD1DC;
-      box-shadow: 0 0 10px #FFB7C5, 0 0 20px #FFB7C5;
+      background: #B0E0E6;
+      box-shadow: 0 0 10px #89CFF0, 0 0 20px #89CFF0;
       opacity: 0.5; pointer-events: none;
     }
     @keyframes floatOrb {
@@ -162,30 +161,36 @@
   </style>
 </head>
 <body>
-  <!-- Aurora background -->
-  <div class="aurora"></div>
-  <div class="aurora-mid"></div>
+  <!-- Glowing Overlay -->
+  <div class="glow-overlay"></div>
   
-  <!-- Sakura Particles container -->
+  <!-- Particles container -->
   <div id="particles" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
 
   <!-- ══════════════════════════════════════════════════
        LOGIN PAGE
   ══════════════════════════════════════════════════ -->
   <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-12 w-full">
-    <div class="glass-login rounded-3xl p-10 w-full max-w-[420px] fade-in">
+    
+    <div class="glass-login rounded-3xl p-10 w-full max-w-[420px] fade-in relative z-10">
+
+      <!-- Dynamic Clock -->
+      <div class="text-center mb-6">
+        <p id="live-time" class="text-4xl font-display font-black frost-text tracking-widest mb-1"></p>
+        <p id="live-greeting" class="text-frost/50 text-[12px] uppercase tracking-[0.3em] font-bold"></p>
+      </div>
 
       <!-- Brand -->
       <div class="text-center mb-9">
         <div class="logo-ring inline-block mb-6">
           <div class="w-[76px] h-[76px] rounded-[22px] flex items-center justify-center mx-auto"
-               style="background:linear-gradient(135deg,#FFB7C5,#FF91A4);box-shadow:0 10px 35px rgba(255,183,197,0.4)">
-            <i class="fas fa-torii-gate text-[#0A0A10] text-3xl"></i>
+               style="background:linear-gradient(135deg,#89CFF0,#4682B4);box-shadow:0 10px 35px rgba(137,207,240,0.4)">
+            <i class="fas fa-snowflake text-[#0A0A10] text-3xl"></i>
           </div>
         </div>
-        <h1 class="font-display text-5xl font-black sakura-text leading-none tracking-tight mb-3">SnapVault</h1>
+        <h1 class="font-display text-5xl font-black frost-text leading-none tracking-tight mb-3">Nishanth Gallery</h1>
         <div class="section-pill mx-auto mt-2">
-          <i class="fas fa-seedling text-[9px]"></i> 家族の思い出
+          <i class="fas fa-snowflake text-[9px]"></i> Family Memories
         </div>
       </div>
       
@@ -200,40 +205,61 @@
       <!-- Form -->
       <form method="POST" class="space-y-5" autocomplete="off">
         {{ form.hidden_tag() }}
-        <div class="relative">
-          <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
-          <input name="username" id="username" type="text" placeholder="Family Head (家長)" required class="field" autocomplete="off">
+        <div class="input-wrapper relative">
+          <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-frost/60 text-sm z-10" style="color:rgba(137,207,240,0.6)"></i>
+          <input name="username" id="username" type="text" placeholder="Family Head" required class="field" autocomplete="off">
         </div>
-        <div class="relative">
-          <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-sakura/50 text-sm z-10" style="color:rgba(255,183,197,0.5)"></i>
-          <input name="password" id="password" type="password" placeholder="Access Code (暗証番号)" required class="field" autocomplete="new-password">
+        <div class="input-wrapper relative">
+          <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-frost/60 text-sm z-10" style="color:rgba(137,207,240,0.6)"></i>
+          <input name="password" id="password" type="password" placeholder="Access Code" required class="field" autocomplete="new-password">
         </div>
-        <button type="submit" name="submit" class="btn-sakura w-full py-[16px] rounded-xl font-bold text-sm tracking-wide mt-2 flex items-center justify-center gap-2">
+        <button type="submit" name="submit" class="btn-frost w-full py-[16px] rounded-xl font-bold text-sm tracking-wide mt-2 flex items-center justify-center gap-2">
           <i class="fas fa-door-open"></i> Unlock Memories
         </button>
       </form>
 
-      <p class="text-center text-white/20 text-xs mt-8 tracking-wide">🔒 永遠に暗号化された保管庫</p>
+      <p class="text-center text-white/90 text-xs mt-8 tracking-wide">🔒 Forever Encrypted Vault</p>
     </div>
   </div>
   
   <script>
-    /* ─── Sakura Particles ───────────────────────────── */
+    /* ─── UI Interactions ──────────────────────────── */
+    // Dynamic Clock
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      let m = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('live-time').innerText = `${h.toString().padStart(2, '0')}:${m}`;
+      
+      let greeting = "Good Evening";
+      if(h < 12) greeting = "Good Morning";
+      else if(h < 17) greeting = "Good Afternoon";
+      document.getElementById('live-greeting').innerText = greeting + ", Family Head";
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Clock Logic already defined above
+
+    /* ─── Snow Particles ───────────────────────────── */
     function createParticles(){
       const c=document.getElementById('particles');
-      const petals = ['🌸', '💮'];
-      for(let i=0;i<30;i++){
+
+
+      // Snowflakes
+      for(let i=0;i<80;i++){
         const p=document.createElement('div');
-        p.className='sakura-petal';
-        p.innerText = petals[Math.floor(Math.random() * petals.length)];
-        const dur=(Math.random()*15+10)+'s';
-        const del=(Math.random()*10)+'s';
-        const swayDur=(Math.random()*4+3)+'s';
-        const size=(Math.random()*10+12)+'px';
+        p.className='snow-flake'; 
+        const size=(Math.random()*4+2)+'px';
+        const dur=(Math.random()*8+5)+'s';
+        const del=(Math.random()*5)+'s';
         p.style.cssText=`
-          left:${Math.random()*100}%;
-          font-size:${size};
-          animation: fall ${dur} linear infinite ${del}, sway ${swayDur} ease-in-out infinite alternate ${del};
+          left:${Math.random()*120 - 10}%;
+          width:${size};
+          height:${size};
+          animation-duration: ${dur};
+          animation-delay: ${del};
+          opacity: ${Math.random()*0.5 + 0.3};
         `;
         c.appendChild(p);
       }
