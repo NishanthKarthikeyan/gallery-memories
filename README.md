@@ -72,11 +72,6 @@ The application is styled with a premium **"Frost/Winter" aesthetics** and **Gla
    ```
    The application will start running at `http://localhost:5000`.
 
-## Default Credentials
-
-Upon running the application for the first time, a default user is created automatically:
-- **Username**: nishanth
-- **Password**: knh@2005
 
 *Please ensure you change these credentials or disable this feature in a production environment.*
 
