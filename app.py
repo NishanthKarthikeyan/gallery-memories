@@ -87,6 +87,10 @@ with app.app_context():
         db.session.add(default_user)
         db.session.commit()
 
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_file('sitemap.xml')
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
